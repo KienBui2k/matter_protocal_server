@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DeviceModule } from './modules/device/device.module';
+import { UserDeviveModule } from './modules/user_devive/user_devive.module';
+import { BindingModule } from './modules/binding/binding.module';
 @Module({
        
   imports: [ConfigModule.forRoot(),
@@ -19,6 +22,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
     }),
     UsersModule,
+    DeviceModule,
+    UserDeviveModule,
+    BindingModule,
 ],
   controllers: [AppController],
   providers: [AppService],
