@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DeviceModule } from './modules/device/device.module';
 import { UserDeviveModule } from './modules/user_devive/user_devive.module';
 import { BindingModule } from './modules/binding/binding.module';
+import { AuthenModule } from './modules/authen/authen.module';
 @Module({
        
   imports: [ConfigModule.forRoot(),
@@ -25,6 +26,7 @@ import { BindingModule } from './modules/binding/binding.module';
     DeviceModule,
     UserDeviveModule,
     BindingModule,
+    AuthenModule
 ],
   controllers: [AppController],
   providers: [AppService],
