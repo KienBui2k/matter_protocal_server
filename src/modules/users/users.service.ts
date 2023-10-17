@@ -6,6 +6,9 @@ import { Repository } from 'typeorm';
 import { JwtService } from '../jwt/jwt.service';
 import { User } from './entities/user.entity';
 import { FindByIdSerRes, UpdateSerRes } from './users.interface';
+import validation from '../utils/validation';
+
+
 
 @Injectable()
 export class UsersService {
@@ -83,28 +86,31 @@ export class UsersService {
       }
     }
   }
-  // async test(userId: string): Promise<FindByIdSerRes> {
-  //   try {
-  //     let result = await this.users.findOne({
-  //       where: {
-  //         id: userId
-  //       }
-  //     })
-  //     if (!result) {
-  //       throw new Error
-  //     }
-  //     return {
-  //       status: true,
-  //       data: result,
-  //       message: "findById good!"
-  //     }
-  //   } catch (err) {
-  //     return {
-  //       status: false,
-  //       data: null,
-  //       message: "Lỗi model"
-  //     }
-  //   }
-  // }
+  async findByEmailOrUserName(emailOrUserName: string): Promise<FindByIdSerRes> {
+    try {
+      let result = await this.users.findOne({
+        where: validation.isEmail(emailOrUserName)
+          ? {
+            email: emailOrUserName,
+            emailAuthentication: true
+          }
+          : {
+            userName: emailOrUserName
+          }
+      });
+      console.log("result", emailOrUserName);
+
+      if (!result) {
+        throw new Error
+      }
+      return {
+        status: true,
+        data: result,
+        message: "find thành công"
+      }
+    } catch (err) {
+      return { status: false, data: null, message: "lỗi" }
+    }
+  }
 
 }

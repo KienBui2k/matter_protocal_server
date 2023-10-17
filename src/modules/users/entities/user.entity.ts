@@ -1,5 +1,6 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import * as  bcrypt from 'bcrypt'
+import { UserStatus } from "../user.enum";
 
 @Entity("users")
 export class User {
@@ -25,6 +26,9 @@ export class User {
     async hashPassword() {
         this.password = await bcrypt.hash(this.password, 10);
     }
+
+    @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
+    status: UserStatus;
 
     @Column({
         default: String(Date.now())
