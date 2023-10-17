@@ -32,7 +32,7 @@ export class UsersController {
             receiverName: `${serRes.data.userName}`
           })
         })
-        ///console.log("check", check, serRes.data.email)
+    
       }
 
 
