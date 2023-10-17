@@ -4,14 +4,15 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DeviceModule } from './modules/device/device.module';
+import { DeviceModule } from './modules/devices/device.module';
 import { UserDeviveModule } from './modules/user_devive/user_devive.module';
 import { BindingModule } from './modules/binding/binding.module';
+import { AuthenModule } from './modules/authen/authen.module';
+import { socketModule } from './modules/socket/socket.module';
 @Module({
        
   imports: [ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      
       type: 'mysql',
       host: process.env.MYSQL_HOST,
       port: Number(process.env.MYSQL_PORT),
@@ -25,6 +26,8 @@ import { BindingModule } from './modules/binding/binding.module';
     DeviceModule,
     UserDeviveModule,
     BindingModule,
+    AuthenModule,
+    socketModule,
 ],
   controllers: [AppController],
   providers: [AppService],
