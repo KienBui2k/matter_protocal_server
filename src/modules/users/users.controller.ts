@@ -58,7 +58,6 @@ export class UsersController {
             });
             console.log("serRes", serRes)
             if (serRes.status) {
-              /* Mail */
               this.mail.sendMail({
                 subject: "Authentication Email Notice",
                 to: serRes.data.email,
