@@ -10,26 +10,27 @@ import { BindingModule } from './modules/binding/binding.module';
 import { AuthenModule } from './modules/authen/authen.module';
 import { socketModule } from './modules/socket/socket.module';
 @Module({
-       
+
   imports: [ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.MYSQL_HOST,
-      port: Number(process.env.MYSQL_PORT),
-      username: process.env.MYSQL_USERNAME,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DBNAME,
-     entities: ["dist/**/*.entity{.ts,.js}"],
-      synchronize: true,
-    }),
+  TypeOrmModule.forRoot({
+    type: 'mysql',
+    host: process.env.MY_SQL_HOST,
+    port: Number(process.env.MY_SQL_PORT),
+    username: process.env.MY_SQL_USERNAME,
+    password: process.env.MY_SQL_PASSWORD,
+    database: process.env.MYSQL_DBNAME,
+    
+    entities: ["dist/**/*.entity{.ts,.js}"],
+    synchronize: true,
+  }),
     UsersModule,
     DeviceModule,
     UserDeviveModule,
     BindingModule,
     AuthenModule,
     socketModule,
-],
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
