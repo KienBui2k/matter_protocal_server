@@ -1,131 +1,82 @@
-// import { Inject, OnModuleInit } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-// import { Server, Socket } from 'socket.io';
-// import { Device } from 'src/modules/devices/entities/device.entity';
-// import { JwtService } from 'src/modules/jwt/jwt.service';
-//  import * as io from 'socket.io-client';
-// // import io from 'socket.io-client'
-// interface deviceType {
-//     device: Device;
-//     socket:Socket;
-// }
-// const serverUrl = 'http://127.0.0.1:5508';
-// const socket = io(serverUrl);
+import { OnModuleInit } from '@nestjs/common';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { async } from 'rxjs';
+import { Server } from 'socket.io';
+import { getCommand,Command } from 'src/enum';
+import WebSocket from 'ws';
+interface deviceType {
+  decodedData:string;
+}
+@WebSocketGateway()
+export class DeviceSocket implements OnModuleInit {
+  @WebSocketServer()
+  server: Server;
+  private devices: deviceType[] = [];
+  constructor() {}
+  async onModuleInit() {
+    
+    this.socketModule(8, 156); 
 
-// @WebSocketGateway(parseInt(process.env.MCS_PORT), { cors: true })
-// export class DeviceSocketGateway implements OnModuleInit {
-
-//     @WebSocketServer()
-//     server: Server; 
-//     divices: deviceType[] = [];
-//     constructor(
-//         private readonly jwt: JwtService,
-//         @Inject('MCS_HOST') private readonly mcsHost: string,
-
-//     ){}
-//    onModuleInit() {
-// socket.on('connect', () => {
-//   console.log('Connected to WebSocket server');
-// });
-
-// socket.on('message', (data) => {
-//   console.log('Received message:', data);
-// });
-// socket.emit('message', 'Hello from WebSocket client');
-//         // this.server.on("connect", async (socket: Socket) => {
-//         //     console.log(`Device connected to ${this.mcsHost}:${process.env.MCS_PORT}`);
-//         // });
-
-//     }
-// }
-
-// import { Inject, OnModuleInit } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-// import { Server, Socket } from 'socket.io';
-// import { Device } from 'src/modules/devices/entities/device.entity';
-// import { JwtService } from 'src/modules/jwt/jwt.service';
-// // import * as io from 'socket.io-client';
-// import { io } from 'socket.io-client';
-// interface deviceType {
-//   device: Device;
-//   socket: Socket;
-// }
-
-// @WebSocketGateway(parseInt(process.env.MCS_PORT), { cors: true })
-// export class DeviceSocketGateway implements OnModuleInit {
-//   @WebSocketServer()
-//   server: Server;
-//   devices: deviceType[] = [];
+  }
+  async socketModule(message: number, mode_id: number) {
+    const WebSocket = require('ws');
+    const serverUrl = 'ws://21.240.175.42:5580/ws';
+    const socket = new WebSocket(serverUrl);
 
 
-
-//   constructor(
-//     private readonly jwt: JwtService,
-//     @Inject('MCS_HOST') private readonly mcsHost: string,
-
-//   ) { }
-
-  // onModuleInit() {
+    const param = getCommand(String(message),{
+      "node_id":mode_id
+    })
 
 
-    // const serverUrl = 'http://127.0.0.1:5508';
-    // const socket = io(serverUrl);
-    //   const WebSocket = require('ws');
-    //   const serverUrl = 'ws://21.240.175.42:5580/ws';
+    console.log("param",param);
+    await socket.on('open', async () => {
+      console.log("Connected to WebSocket gateway");
+      socket.send(JSON.stringify(param))
+      
+    })
+    let jsonData;
 
-    //   // Tạo kết nối WebSocket
-    //   const socket = new WebSocket(serverUrl);
+    socket.on('message', (message) => {
+    
+      const bufferdata = Buffer.from(message);
+        
+      try {
+        console.log("test",message);
+        
+        jsonData = JSON.parse(bufferdata.toString());
+        console.log("jsonData",jsonData);
+        
+          if (jsonData?.message_id) {
+            if (jsonData?.result) {
+              const decodedData = Buffer.from(jsonData?.result[1], 'base64').toString('utf-8');
+              console.log('jsonData?.result', jsonData);
+              console.log('jsonData?.result', decodedData);
+              this.devices.push({
+                decodedData,
+              });
+              console.log('devices', this.devices);
+            } else {
+              console.log('Lỗi', jsonData);
+            }
+          }else{
+            console.log("111");
+            
+          }
+      } catch (error) {
+        console.error('Lỗi khi giải mã JSON:', error);
+      }
+    });
 
-    //   // Sự kiện khi kết nối thành công
-    //   socket.on('open', () => {
-    //     console.log('Đã kết nối vào WebSocket gateway.');
+    socket.on('error', (error) => {
+      console.error('Lỗi kết nối:', error);
+    });
 
-    //     const message = {
-    //       message_id: "2",
-    //       command: "open_commissioning_window",
-    //       args: {
-    //         "node_id": 156
-    //       }
-    //     }
-    //     socket.send(JSON.stringify(message));
-    //   });
-
-    //   // Sự kiện khi nhận tin nhắn từ server
-    //   socket.on('message', (message) => {
-    //     const bufferdata = Buffer.from(message);
-    //     let jsonData;
-
-    //     try {
-    //       jsonData = JSON.parse(bufferdata.toString());
-    //       console.log('Nhận tin nhắn từ server:', jsonData);
-    //     } catch (error) {
-    //       console.error('Lỗi khi giải mã JSON:', error);
-    //     }
-    //   });
-
-
-
-    //   // Sự kiện khi có lỗi
-    //   socket.on('error', (error) => {
-    //     console.error('Lỗi kết nối:', error);
-    //   });
-
-    //   // Sự kiện khi đóng kết nối
-    //   socket.on('close', (code, reason) => {
-    //     console.log('Kết nối đã đóng:', code, reason);
-    //   });
-    //   socket.on('connect', () => {
-    //     console.log('Connected to WebSocket server');
-    //   });
-
-    //   socket.on('message', (data) => {
-    //     console.log('Received message:', data);
-    //   });
-
-    //   socket.emit('message', 'Hello from WebSocket client');
-    // }
-//   }
-
-// }
+    socket.on('close', (code, reason) => {
+      console.log('Kết nối đã đóng:', code, reason);
+    });
+  }
+  // async handleParam(message :number) => {
+    
+  // }
+}

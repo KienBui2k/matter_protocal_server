@@ -8,7 +8,7 @@ import { DeviceModule } from './modules/devices/device.module';
 import { UserDeviveModule } from './modules/user_devive/user_devive.module';
 import { BindingModule } from './modules/binding/binding.module';
 import { AuthenModule } from './modules/authen/authen.module';
-import { socketModule } from './modules/socket/socket.module';
+import { SocketModule } from './modules/socket/socket.module';
 @Module({
 
   imports: [ConfigModule.forRoot(),
@@ -28,7 +28,7 @@ import { socketModule } from './modules/socket/socket.module';
     UserDeviveModule,
     BindingModule,
     AuthenModule,
-    socketModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
