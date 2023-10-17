@@ -32,11 +32,46 @@ export class UsersController {
             receiverName: `${serRes.data.userName}`
           })
         })
-        ///console.log("check", check, serRes.data.email)
+    
       }
 
 
       return res.status(serRes.status ? 200 : 213).json(serRes);
+    } catch (err) {
+      return res.status(500).json({
+        message: "Server Controller Error!"
+      });
+    }
+  }
+
+  
+  @Get('email-authentication/:userId/:token')
+  async emailAuthentication(@Param('userId') userId: string, @Param('token') token: string, @Res() res: Response) {
+    try {
+      let userDecode = this.jwt.verifyToken(token);
+      let serResUser = await this.usersService.findById(userId);
+      if (serResUser.status && userDecode) {
+        if (serResUser.data.updateAt == userDecode.updateAt) {
+          if (!serResUser.data.emailAuthentication) {
+            let serRes = await this.usersService.update(userId, {
+              emailAuthentication: true
+            });
+            console.log("serRes", serRes)
+            if (serRes.status) {
+              this.mail.sendMail({
+                subject: "Authentication Email Notice",
+                to: serRes.data.email,
+                text: `Email đã được liên kết với tài khoản ${serRes.data.userName}`
+              })
+            }
+
+            return res.status(serRes.status ? 200 : 213).send(serRes.status ? "ok" : "fail");
+          } else {
+            return res.status(213).send("Tài khoản đã kích hoạt email!");
+          }
+        }
+      }
+      return res.status(213).send("Email đã hết hạn!");
     } catch (err) {
       return res.status(500).json({
         message: "Server Controller Error!"

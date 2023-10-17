@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '../jwt/jwt.service';
 import { User } from './entities/user.entity';
-import { FindByIdSerRes } from './users.interface';
+import { FindByIdSerRes, UpdateSerRes } from './users.interface';
 
 @Injectable()
 export class UsersService {
@@ -54,6 +54,32 @@ export class UsersService {
         status: false,
         data: null,
         message: "Lỗi model"
+      }
+    }
+  }
+
+  async update(userId: string, updateUserDto: UpdateUserDto): Promise<UpdateSerRes> {
+    try {
+      let userSource = await this.users.findOne({
+        where: {
+          id: userId
+        }
+      })
+      let userSourceUpdate = this.users.merge(userSource, updateUserDto);
+      let result = await this.users.save(userSourceUpdate);
+      return {
+        status: true,
+        data: result,
+        message: "Update ok!"
+      }
+    } catch (err) {
+      console.log("err", err);
+
+      return {
+        status: false,
+        data: null,
+        message: "Lỗi model"
+
       }
     }
   }
