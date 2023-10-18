@@ -16,9 +16,15 @@ export class AuthenController {
     @Post()
     async memberAuthentication(@Body() authenticationDto: AuthenticationDto, @Res() res: Response) {
         try {
+            console.log("authenticationDto", authenticationDto);
+
             let userDecode = this.jwt.verifyToken(authenticationDto.token);
+            console.log("userDecode", userDecode);
+
             if (userDecode) {
                 let serResUser = await this.userService.findById(userDecode.id);
+                console.log("serResUser", serResUser);
+
                 if (serResUser.status) {
                     if (userDecode.updateAt == serResUser.data.updateAt) {
                         return res.status(200).json(serResUser);
