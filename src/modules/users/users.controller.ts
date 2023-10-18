@@ -22,7 +22,6 @@ export class UsersController {
   @Post()
   async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     try {
-
       let serRes = await this.usersService.register(createUserDto);
       console.log("serRes.status", serRes);
 
@@ -39,7 +38,7 @@ export class UsersController {
             receiverName: `${serRes.data.userName}`
           })
         })
-    
+
       }
 
 
@@ -89,8 +88,9 @@ export class UsersController {
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     try {
+      console.log("loginDto", loginDto);
+
       let serRes = await this.usersService.findByEmailOrUserName(loginDto.userNameOrEmail);
-      console.log("serRes", serRes);
 
       if (!serRes.status) {
         return res.status(213).json({
@@ -164,8 +164,6 @@ export class UsersController {
   async authenticationResetPassword(@Param('token') token: string, @Query('newPassword') newPassword: string, @Res() res: Response) {
     try {
       let userDecode = this.jwt.verifyToken(token);
-      console.log("userDecode", userDecode);
-      console.log("changePasswordDto", newPassword);
 
       if (userDecode) {
         let serResUser = await this.usersService.findById(userDecode.id);
