@@ -1,82 +1,91 @@
 import { OnModuleInit } from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { async } from 'rxjs';
-import { Server } from 'socket.io';
-import { getCommand,Command } from 'src/enum';
-import WebSocket from 'ws';
+import { Server, Socket } from 'socket.io';
+// import { Socket } from 'socket.io-client';
+import { getCommand, Command } from 'src/enum';
+
 interface deviceType {
-  decodedData:string;
+  decodedData: string;
 }
-@WebSocketGateway()
+@WebSocketGateway(3001, { cors: true })
 export class DeviceSocket implements OnModuleInit {
   @WebSocketServer()
   server: Server;
-  private devices: deviceType[] = [];
-  constructor() {}
-  async onModuleInit() {
-    
-    this.socketModule(8, 156); 
 
+  private devices: deviceType[] = [];
+
+  constructor() {}
+
+  onModuleInit() {
+    this.server.on('connect', async (socket: Socket) => {
+      socket.on(
+        'requireDecoe',
+        (data: { message: number; node_id: number }) => {
+          // data dau vao cua connect
+            this.socketModule(socket, data.message, data.node_id);
+          // socket.emit("test", {
+          //   decode:"huahfae"
+          // })
+        },
+      );
+
+      //  socket.emit("requireDecoe", {
+      //     decode:"huahfae"
+      //   })
+    });
   }
-  async socketModule(message: number, mode_id: number) {
+  async socketModule(socket: Socket,message: number, node_id: number) {
     const WebSocket = require('ws');
     const serverUrl = 'ws://21.240.175.42:5580/ws';
-    const socket = new WebSocket(serverUrl);
+    const socketIo = new WebSocket(serverUrl);
 
+    const param = getCommand(String(message), {
+      node_id: node_id,
+    });
 
-    const param = getCommand(String(message),{
-      "node_id":mode_id
-    })
+    // let testdecoe = 'abc';
+    // socket.emit('decode', "ehfbehvwjn");
 
+    console.log('param', param);
 
-    console.log("param",param);
-    await socket.on('open', async () => {
-      console.log("Connected to WebSocket gateway");
-      socket.send(JSON.stringify(param))
-      
-    })
+    await socketIo.on('open', async () => {
+      console.log('Connected to WebSocket gateway');
+      socketIo.send(JSON.stringify(param));
+    });
     let jsonData;
 
-    socket.on('message', (message) => {
-    
+    socketIo.on('message', (message) => {
       const bufferdata = Buffer.from(message);
-        
       try {
-        console.log("test",message);
-        
         jsonData = JSON.parse(bufferdata.toString());
-        console.log("jsonData",jsonData);
-        
-          if (jsonData?.message_id) {
-            if (jsonData?.result) {
-              const decodedData = Buffer.from(jsonData?.result[1], 'base64').toString('utf-8');
-              console.log('jsonData?.result', jsonData);
-              console.log('jsonData?.result', decodedData);
-              this.devices.push({
-                decodedData,
-              });
-              console.log('devices', this.devices);
-            } else {
-              console.log('Lỗi', jsonData);
-            }
-          }else{
-            console.log("111");
-            
+        if (jsonData?.message_id) {
+          if (jsonData?.result) {
+            const decodedData = Buffer.from(
+              jsonData?.result[1],
+              'base64',
+            ).toString('utf-8');
+            socket.emit('decode', decodedData);
+            this.devices.push({
+              decodedData,
+            });
+          } else {
+            console.log('Lỗi', jsonData);
+              socket.emit('decodeFailed', "Đã có lỗi trong quá trình tìm kiếm mã kết nối, vui lòng thử lại sau!");
           }
+        }
       } catch (error) {
         console.error('Lỗi khi giải mã JSON:', error);
+         socket.emit('decodeFailed', "Đã có lỗi trong quá trình tìm kiếm mã kết nối, vui lòng thử lại sau!");
       }
     });
 
-    socket.on('error', (error) => {
+    socketIo.on('error', (error) => {
       console.error('Lỗi kết nối:', error);
     });
 
-    socket.on('close', (code, reason) => {
+    socketIo.on('close', (code, reason) => {
       console.log('Kết nối đã đóng:', code, reason);
     });
   }
-  // async handleParam(message :number) => {
-    
-  // }
 }
