@@ -1,9 +1,13 @@
 import { OnModuleInit } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { emit } from 'process';
 import { async } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 // import { Socket } from 'socket.io-client';
 import { getCommand, Command } from 'src/enum';
+import { Device } from 'src/modules/devices/entities/device.entity';
+import { Repository } from 'typeorm';
 
 interface deviceType {
   decodedData: string;
@@ -15,13 +19,15 @@ export class DeviceSocket implements OnModuleInit {
 
   private devices: deviceType[] = [];
 
-  constructor() {}
+  constructor(
+     @InjectRepository(Device) private readonly Devices: Repository<Device>,
+  ) {}
 
   onModuleInit() {
     this.server.on('connect', async (socket: Socket) => {
       socket.on(
         'requireDecoe',
-        (data: { message: number; node_id: number }) => {
+        (data: { message: number; node_id: number; }) => {
           // data dau vao cua connect
             this.socketModule(socket, data.message, data.node_id);
           // socket.emit("test", {
@@ -29,6 +35,11 @@ export class DeviceSocket implements OnModuleInit {
           // })
         },
       );
+      socket.on('unpairDevice',async (data:{message:number,id:string,node_id:number }) => {
+        this.socketModule(socket,data.message,data.node_id)
+          // let device = await 
+          this.unpair(socket,data.id)
+      })
 
       //  socket.emit("requireDecoe", {
       //     decode:"huahfae"
@@ -59,8 +70,10 @@ export class DeviceSocket implements OnModuleInit {
       const bufferdata = Buffer.from(message);
       try {
         jsonData = JSON.parse(bufferdata.toString());
-        if (jsonData?.message_id) {
-          if (jsonData?.result) {
+        console.log("jsonData",jsonData);
+        
+        if (jsonData?.message_id ) {
+          if (jsonData?.result && jsonData?.message_id == 8) {
             const decodedData = Buffer.from(
               jsonData?.result[1],
               'base64',
@@ -69,14 +82,27 @@ export class DeviceSocket implements OnModuleInit {
             this.devices.push({
               decodedData,
             });
-          } else {
+          } else if(jsonData?.message_id == 7 && jsonData?.result == null){
+            socket.emit('unpairSucces',"Đã ngắt kết nối với thiết bị!")
+          }else
+
+          {
             console.log('Lỗi', jsonData);
+            if(jsonData.error_code == 5){
+              socket.emit('unpairFailed', "Không tìm thấy thấy thiết bị cần ngắt kết nối.");
+            }else if(jsonData.error_code == 7){
               socket.emit('decodeFailed', "Đã có lỗi trong quá trình tìm kiếm mã kết nối, vui lòng thử lại sau!");
+            }else if(jsonData.error_code == 0){
+              socket.emit('pairFailed', "Mã kết nối không hợp lệ, vui lòng thử lại sau!.");
+            }
+            // else if(){
+
+            // }
           }
         }
       } catch (error) {
         console.error('Lỗi khi giải mã JSON:', error);
-         socket.emit('decodeFailed', "Đã có lỗi trong quá trình tìm kiếm mã kết nối, vui lòng thử lại sau!");
+         socket.emit('socketFailed', "Lỗi hệ thống, vui lòng thử lại sau!");
       }
     });
 
@@ -87,5 +113,15 @@ export class DeviceSocket implements OnModuleInit {
     socketIo.on('close', (code, reason) => {
       console.log('Kết nối đã đóng:', code, reason);
     });
+  }
+  async unpair(socket:Socket,id:string | null){
+  try {
+    if(id == null)return false;
+    let devieDelete = await this.Devices.delete({id:id})
+    console.log("devieDelete",devieDelete);
+    return
+  } catch (err) {
+    return false;
+  }
   }
 }
