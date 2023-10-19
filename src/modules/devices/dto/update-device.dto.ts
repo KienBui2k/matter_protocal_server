@@ -1,4 +1,5 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateDeviceDto } from './create-device.dto';
-
-export class UpdateDeviceDto extends PartialType(CreateDeviceDto) {}
+import { Allow, IsEmail, IsBoolean, IsEnum } from "class-validator";
+export class UpdateDeviceDto {
+    @Allow()
+    name: string;
+}
