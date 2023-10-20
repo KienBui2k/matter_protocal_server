@@ -1,23 +1,22 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("devices")
 export class Device {
-   @PrimaryColumn('uuid') 
-   id:string
+   @PrimaryGeneratedColumn("uuid")
+   id: string;
 
    @Column()
-    name: string
+   name: string;
 
-    @Column()
-    user_device_id: string
+   @Column()
+   user_device_id: string;
 
-    @Column()
-    node_id: number
+   @Column()
+   node_id: number; // number
 
-    @Column()
-    status: string
+   @Column()
+   status: boolean;
 
-    @Column()
-    power: number
-
+   @Column()
+   power: number; // number
 }
