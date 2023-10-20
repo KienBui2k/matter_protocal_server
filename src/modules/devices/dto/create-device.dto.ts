@@ -5,12 +5,12 @@ export class CreateDeviceDto {
     name: string;
     @IsNotEmpty()
     user_device_id: string;
-    @IsNotEmpty()
+    @Allow()
     node_id: number;
     @IsNotEmpty()
-    status: string;
+    status: boolean;
     @IsNotEmpty()
     power: number;
-    @IsNotEmpty()
-    dayConnect: string;
+    // @IsNotEmpty()
+    // dayConnect: string;
 }

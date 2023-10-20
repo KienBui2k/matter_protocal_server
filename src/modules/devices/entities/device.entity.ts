@@ -15,7 +15,7 @@ export class Device {
    node_id: number; // number
 
    @Column()
-   status: string;
+   status: boolean;
 
    @Column()
    power: number; // number
