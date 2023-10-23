@@ -28,6 +28,7 @@ export class DeviceSocket implements OnModuleInit {
       socket.on(
         'requireDecoe',
         (data: { message: number; node_id: number; }) => {
+           socket.emit('decode', "1213");
           // data dau vao cua connect
             this.socketModule(socket, data.message, data.node_id);
           // socket.emit("test", {
@@ -35,10 +36,10 @@ export class DeviceSocket implements OnModuleInit {
           // })
         },
       );
-      socket.on('unpairDevice',async (data:{message:number,id:string,node_id:number }) => {
+      socket.on('unpairDevice',async (data:{message:number,id:string,node_id:number,active:boolean }) => {
         this.socketModule(socket,data.message,data.node_id)
           // let device = await 
-          this.unpair(socket,data.id)
+          this.unpair(socket,data.id,data.active )
       })
 
       //  socket.emit("requireDecoe", {
@@ -69,35 +70,31 @@ export class DeviceSocket implements OnModuleInit {
     socketIo.on('message', (message) => {
       const bufferdata = Buffer.from(message);
       try {
-        jsonData = JSON.parse(bufferdata.toString());
-        console.log("jsonData",jsonData);
-        
+        jsonData = JSON.parse(bufferdata.toString()); 
+        console.log("jsonData",jsonData);              
         if (jsonData?.message_id ) {
           if (jsonData?.result && jsonData?.message_id == 8) {
             const decodedData = Buffer.from(
               jsonData?.result[1],
               'base64',
             ).toString('utf-8');
-            socket.emit('decode', decodedData);
+            console.log("decode",decodedData);
+            
+            // socket.emit('decode', decodedData);
             this.devices.push({
               decodedData,
             });
           } else if(jsonData?.message_id == 7 && jsonData?.result == null){
             socket.emit('unpairSucces',"Đã ngắt kết nối với thiết bị!")
-          }else
-
-          {
+          }else{
             console.log('Lỗi', jsonData);
             if(jsonData.error_code == 5){
               socket.emit('unpairFailed', "Không tìm thấy thấy thiết bị cần ngắt kết nối.");
-            }else if(jsonData.error_code == 7){
+            }else if(jsonData.error_code == 7){              
               socket.emit('decodeFailed', "Đã có lỗi trong quá trình tìm kiếm mã kết nối, vui lòng thử lại sau!");
             }else if(jsonData.error_code == 0){
-              socket.emit('pairFailed', "Mã kết nối không hợp lệ, vui lòng thử lại sau!.");
+              socket.emit('decodeFailed', "Mã kết nối không hợp lệ, vui lòng thử lại sau!.");
             }
-            // else if(){
-
-            // }
           }
         }
       } catch (error) {
@@ -114,10 +111,10 @@ export class DeviceSocket implements OnModuleInit {
       console.log('Kết nối đã đóng:', code, reason);
     });
   }
-  async unpair(socket:Socket,id:string | null){
+  async unpair(socket:Socket,id:string | null, active:boolean){
   try {
     if(id == null)return false;
-    let devieDelete = await this.Devices.delete({id:id})
+    let devieDelete =await this.Devices.update({ id }, { active: false });
     console.log("devieDelete",devieDelete);
     return
   } catch (err) {

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { UpdateDeviceDto } from './dto/update-device.dto';
+
 import { Response } from 'express';
 
 interface Data1 {
@@ -14,6 +15,7 @@ interface Data2 {
 interface Result {
   node_id?: number;
 }
+
 @Controller('device')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) { }
@@ -163,12 +165,31 @@ export class DeviceController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDeviceDto: UpdateDeviceDto) {
-    return this.deviceService.update(id, updateDeviceDto);
+
+  async update(@Param('id') id: string ,@Res() res: Response) {
+ try {
+      let serviceRes = await this.deviceService.unpair(id);
+        if(serviceRes){
+      return res.status(res.status ? 200 : 213).json({
+        message: serviceRes.message,
+        data: serviceRes.data,
+      }); 
+      }
+
+    } catch (error) {
+       return res.status(500).json({
+        message: 'Server Controller Error!',
+      })
+    } 
+
   }
 
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.deviceService.delete(id);
+
+  async remove(@Param('id') id: string) {
+   
+
   }
+  
 }

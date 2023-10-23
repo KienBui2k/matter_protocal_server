@@ -4,13 +4,16 @@ import { UpdateDeviceDto } from './dto/update-device.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Device } from './entities/device.entity';
 import { Repository } from 'typeorm';
+
 import { WebSocket } from 'ws'
 import { Socket, io } from 'socket.io-client'
-import { log } from 'console';
+
+
+
+
 
 @Injectable()
 export class DeviceService {
-
   private socket: Socket;
   constructor(@InjectRepository(Device) private readonly devices: Repository<Device>) { }
 
@@ -50,6 +53,7 @@ export class DeviceService {
         }
       })
 
+///
       let userSourceUpdate = this.devices.merge(devicesSource, updateDeviceDto);
       let result = await this.devices.save(userSourceUpdate);
       return {
@@ -245,4 +249,30 @@ export class DeviceService {
       // socket.emit('message', 'Hello from WebSocket client');
     });
   }
+  async unpair(id: string) {
+    try {
+      let data = await this.devices.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!data) return false;
+      data.active = !data.active;
+      console.log("data",data);
+      
+      let result = await this.devices.save(data);
+      return {
+        status: true,
+        message: 'Unpair device Successfully!',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        message: 'lỗi hệ thống, vui lòng thử lại sau!',
+        status: false,
+        data: null,
+      };
+    }
+  }
+
 }
