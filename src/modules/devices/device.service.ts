@@ -52,8 +52,6 @@ export class DeviceService {
           id: id
         }
       })
-
-///
       let userSourceUpdate = this.devices.merge(devicesSource, updateDeviceDto);
       let result = await this.devices.save(userSourceUpdate);
       return {
@@ -257,9 +255,7 @@ export class DeviceService {
         },
       });
       if (!data) return false;
-      data.active = !data.active;
-      console.log("data",data);
-      
+      data.active = !data.active;    
       let result = await this.devices.save(data);
       return {
         status: true,
