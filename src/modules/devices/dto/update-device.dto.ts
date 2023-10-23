@@ -1,5 +1,18 @@
-import { Allow, IsEmail, IsBoolean, IsEnum } from "class-validator";
+
+import { Allow, IsOptional } from "class-validator";
+
 export class UpdateDeviceDto {
-    @Allow()
-    name: string;
+    @IsOptional()
+     @Allow()
+    name?:string
+
+     @IsOptional()
+       @Allow()
+    status?: boolean;
+
+    @IsOptional()
+      @Allow()
+    active?: boolean;
+
 }
+

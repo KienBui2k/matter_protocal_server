@@ -1,6 +1,7 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import * as  bcrypt from 'bcrypt'
 import { UserStatus } from "../user.enum";
+import { UserDevive } from "src/modules/user_devive/entities/user_devive.entity";
 
 @Entity("users")
 export class User {
@@ -39,4 +40,7 @@ export class User {
         default: String(Date.now())
     })
     updateAt: String;
+
+    @OneToMany(() => UserDevive, (userDevice => userDevice.user_id))
+    userDevice:UserDevive[]
 }
