@@ -1,13 +1,11 @@
 import { OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { emit } from 'process';
-import { async } from 'rxjs';
 import { Server, Socket } from 'socket.io';
-// import { Socket } from 'socket.io-client';
 import { getCommand, Command } from 'src/enum';
 import { Device } from 'src/modules/devices/entities/device.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/modules/users/entities/user.entity';
 
 interface deviceType {
   decodedData: string;
@@ -21,6 +19,7 @@ export class DeviceSocket implements OnModuleInit {
 
   constructor(
      @InjectRepository(Device) private readonly Devices: Repository<Device>,
+     @InjectRepository(User) private readonly User: Repository<User>,
   ) {}
 
   onModuleInit() {
@@ -28,23 +27,16 @@ export class DeviceSocket implements OnModuleInit {
       socket.on(
         'requireDecoe',
         (data: { message: number; node_id: number; }) => {
-           socket.emit('decode', "1213");
+          //  socket.emit('decode', "1213");
           // data dau vao cua connect
             this.socketModule(socket, data.message, data.node_id);
-          // socket.emit("test", {
-          //   decode:"huahfae"
-          // })
         },
       );
       socket.on('unpairDevice',async (data:{message:number,id:string,node_id:number,active:boolean }) => {
         this.socketModule(socket,data.message,data.node_id)
-          // let device = await 
           this.unpair(socket,data.id,data.active )
       })
 
-      //  socket.emit("requireDecoe", {
-      //     decode:"huahfae"
-      //   })
     });
   }
   async socketModule(socket: Socket,message: number, node_id: number) {
@@ -80,12 +72,13 @@ export class DeviceSocket implements OnModuleInit {
             ).toString('utf-8');
             console.log("decode",decodedData);
             
-            // socket.emit('decode', decodedData);
+            socket.emit('decode', decodedData);
             this.devices.push({
               decodedData,
             });
-          } else if(jsonData?.message_id == 7 && jsonData?.result == null){
-            socket.emit('unpairSucces',"Đã ngắt kết nối với thiết bị!")
+          } else if(jsonData?.message_id == 7 && jsonData?.result == null && jsonData.error_code != 5){
+            // this.unpair(socket,"ầnuiawbnf",false)
+            socket.emit('unpairScuces',"Đã ngắt kết nối với thiết bị!")
           }else{
             console.log('Lỗi', jsonData);
             if(jsonData.error_code == 5){
@@ -120,5 +113,24 @@ export class DeviceSocket implements OnModuleInit {
   } catch (err) {
     return false;
   }
+  }
+  async getDevice(id:string){
+    try {
+      let oldDevice = await this.User.findOne({
+        where:{
+          id
+        },
+        relations:{
+          userDevice:{
+            devices:true
+          }
+        }
+      })
+      console.log("oldDevice",oldDevice);      
+    } catch (err) {
+      console.log("err",err);
+        return false
+      
+    }
   }
 }

@@ -6,9 +6,10 @@ import { Device } from '../devices/entities/device.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserDevive } from '../user_devive/entities/user_devive.entity';
 import { DeviceModule } from '../devices/device.module';
+import { User } from '../users/entities/user.entity';
 @Module({
       imports: [
-        TypeOrmModule.forFeature([Device,UserDevive])
+        TypeOrmModule.forFeature([Device,UserDevive,User])
     ],
   providers: [DeviceSocket, JwtService, UserSocketGateway,DeviceModule],
 })
