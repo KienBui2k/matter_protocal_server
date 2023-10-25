@@ -65,7 +65,7 @@ export class UserSocketGateway implements OnModuleInit {
                     }
                     let binding = await this.getBindingDeviceByUserId(userDeviceId);
                     console.log('binding', binding);
-                    if (binding) {
+                    if (binding && binding.length > 0) {
                         let listId = binding[0].deviceId;
                         const parts = listId.split('+');
                         for (let i = 0; i <= parts.length - 1; i++) {
@@ -82,32 +82,32 @@ export class UserSocketGateway implements OnModuleInit {
                 }
                 let device
                 socket.on("addDevices", async (newItem: { code: string, name: string, power: number }) => {
-                    const WebSocket = require('ws');
-                    const serverUrl = 'ws://21.240.175.42:5580/ws';
-                    const socketIo = new WebSocket(serverUrl);
-                    const param = getCommand(String(2), {
-                        code: newItem.code
-                    });
-                    await socketIo.on('open', async () => {
-                        console.log('Đã kết nối tới cổng WebSocket', param);
-                        socketIo.send(JSON.stringify(param));
-                    });
-                    socketIo.addEventListener('message', async (event) => {
-                        const jsonData = JSON.parse(event.data.toString());
-                        if (jsonData.result && jsonData.result.node_id) {
-                            newItem.code = jsonData.result.node_id
+                const WebSocket = require('ws');
+                const serverUrl = 'ws://192.168.1.41:5580/ws';
+                const socketIo = new WebSocket(serverUrl);
+                const param = getCommand(String(2), {
+                    code: newItem.code
+                });
+                await socketIo.on('open', async () => {
+                    console.log('Đã kết nối tới cổng WebSocket', param);
+                    socketIo.send(JSON.stringify(param));
+                });
+                socketIo.addEventListener('message', async (event) => {
+                  
+                    const jsonData = JSON.parse(event.data.toString());
+                    console.log("event",jsonData);
+
+                    if (jsonData.result && jsonData.result.node_id) {
+                        newItem.code = jsonData.result.node_id
                             device = await this.addDevices(userDeviceId, newItem)
+                        console.log("devicdw1123e", device);
+                        // this.server.emit('receiveCart', device);
+                        if (device) {       
+                              socket.emit('receiveDevice', device);
                         }
-
-                    });
-                    console.log("device", device);
-
-                    if (device) {
-                        const userDeviceId = await this.getUerDevice(user.id);
-                        await this.addDevices(userDeviceId, newItem);
                     }
-                })
-
+                });
+            })
             }
         });
     }
@@ -148,12 +148,14 @@ export class UserSocketGateway implements OnModuleInit {
             device.node_id = Number(newItem.code)
             device.name = newItem.name
             device.power = newItem.power
+                device.userDevice = userDeviceId
             await this.Device.save(device);
 
             let data = await this.getDeviceByUserId(userDeviceId);
             return data;
         } catch (err) {
             console.error("Lỗi khi thêm thiết bị:", err);
+
             return false;
         }
     }

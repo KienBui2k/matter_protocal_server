@@ -60,7 +60,7 @@ export class AddDeviceSocketGateway implements OnModuleInit {
 
             socket.on("addDevices", async (newItem: { code: string, name: string, power: number }) => {
                 const WebSocket = require('ws');
-                const serverUrl = 'ws://21.240.175.42:5580/ws';
+                const serverUrl = 'ws://192.168.1.41:5580/ws';
                 const socketIo = new WebSocket(serverUrl);
                 const param = getCommand(String(2), {
                     code: newItem.code
