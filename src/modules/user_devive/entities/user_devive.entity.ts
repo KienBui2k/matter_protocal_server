@@ -1,33 +1,18 @@
+
+import { Device } from "src/modules/devices/entities/device.entity";
 import { User } from "src/modules/users/entities/user.entity";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("users_device")
-export class UserDevice {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+@Entity("user_device")
+export class UserDevive {
+    @PrimaryGeneratedColumn("uuid")
+    id:string
 
-    @ManyToOne(() => User, (user) => user.userDevice)
-    user: User;
+    @ManyToOne(() => User, (user) => user.id)
+    @JoinColumn({ name: 'userId' })
+    user_id:User
 
+    @OneToMany(() => Device, (device => device.id))
+    devices:Device[]
 
-    @Column({ default: false })
-    status: boolean;
-
-    @Column()
-    node_id: number;
-
-    @Column({
-        default: String(Date.now())
-    })
-    createdAt: String;
-    
-    @Column({
-        default: String(Date.now())
-    })
-    updatedAt: String;
-
-    @BeforeUpdate()
-    async setUpdateTime() {
-        this.updatedAt = String(Date.now());
-    }
 }
