@@ -1,6 +1,7 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as  bcrypt from 'bcrypt'
-import { UserStatus } from "../user.enum";
+import { UserRole, UserStatus } from "../user.enum";
+import { UserDevice } from "src/modules/user_devive/entities/user_devive.entity";
 
 @Entity("users")
 export class User {
@@ -27,6 +28,9 @@ export class User {
         this.password = await bcrypt.hash(this.password, 10);
     }
 
+    @Column({ type: 'enum', enum: UserRole, default: UserRole.OWNER })
+    role: UserRole;
+
     @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
 
@@ -39,4 +43,14 @@ export class User {
         default: String(Date.now())
     })
     updateAt: String;
+
+    @BeforeUpdate()
+    async setUpdateTime() {
+        this.updateAt = String(Date.now());
+    }
+
+
+    @OneToMany(() => UserDevice, (userDevice) => userDevice.user)
+    userDevice: UserDevice[]
+
 }

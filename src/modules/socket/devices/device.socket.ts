@@ -85,7 +85,6 @@ export class DeviceSocket implements OnModuleInit {
           } else if(jsonData?.message_id == 7 && jsonData?.result == null){
             socket.emit('unpairSucces',"Đã ngắt kết nối với thiết bị!")
           }else
-
           {
             console.log('Lỗi', jsonData);
             if(jsonData.error_code == 5){

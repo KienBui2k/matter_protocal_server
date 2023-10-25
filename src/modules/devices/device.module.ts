@@ -7,3 +7,4 @@ import { DeviceController } from './device.controller';
   providers: [DeviceService],
 })
 export class DeviceModule {}
+

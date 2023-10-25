@@ -19,7 +19,7 @@ import { SocketModule } from './modules/socket/socket.module';
     username: process.env.MY_SQL_USERNAME,
     password: process.env.MY_SQL_PASSWORD,
     database: process.env.MYSQL_DBNAME,
-    
+
     entities: ["dist/**/*.entity{.ts,.js}"],
     synchronize: true,
   }),
@@ -29,6 +29,7 @@ import { SocketModule } from './modules/socket/socket.module';
     BindingModule,
     AuthenModule,
     SocketModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
