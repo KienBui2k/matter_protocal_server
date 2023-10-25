@@ -43,8 +43,8 @@ export class DeviceSocket implements OnModuleInit {
     const WebSocket = require('ws');
     const serverUrl = 'ws://21.240.175.42:5580/ws';
     const socketIo = new WebSocket(serverUrl);
-
-    const param = getCommand(String(message), {
+    
+    const param = getCommand(String(message), { 
       node_id: node_id,
     });
 
@@ -115,23 +115,5 @@ export class DeviceSocket implements OnModuleInit {
     return false;
   }
   }
-  async getDevice(id:string){
-    try {
-      let oldDevice = await this.User.findOne({
-        where:{
-          id
-        },
-        relations:{
-          userDevice:{
-            devices:true
-          }
-        }
-      })
-      console.log("oldDevice",oldDevice);      
-    } catch (err) {
-      console.log("err",err);
-        return false
-      
-    }
-  }
+
 }

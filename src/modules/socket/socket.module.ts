@@ -7,14 +7,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChartSocketGateway } from './chart/chart.socket';
 import { UserDevice } from '../user_devive/entities/user_devive.entity';
 import { User } from '../users/entities/user.entity';
+import { Binding } from '../binding/entities/binding.entity';
 import { Chart } from '../chart/entities/chart.entity';
 import { AddDeviceSocketGateway } from './addDevices/addDevices';
 import { DeviceModule } from '../devices/device.module';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Device, UserDevice, User, Chart])
+    TypeOrmModule.forFeature([Device, UserDevice, User, Chart,Binding])
   ],
   providers: [DeviceSocket, JwtService, UserSocketGateway, ChartSocketGateway, AddDeviceSocketGateway,DeviceModule],
+
 
 })
 export class SocketModule { }

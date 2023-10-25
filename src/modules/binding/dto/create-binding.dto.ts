@@ -1,1 +1,3 @@
-export class CreateBindingDto {}
+export class CreateBindingDto {
+    
+}
