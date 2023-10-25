@@ -193,7 +193,7 @@ export class DeviceService {
     console.log("Đã vào getData");
     return new Promise((resolve, reject) => {
 
-      const serverUrl = 'ws://21.240.175.42:5580/ws';
+      const serverUrl = 'ws://192.168.1.41:5580/ws';
       const socket = new WebSocket(serverUrl);
       socket.on('open', () => {
         console.log('Đã kết nối vào WebSocket gateway.');

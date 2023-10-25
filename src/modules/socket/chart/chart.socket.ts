@@ -29,7 +29,7 @@ export class ChartSocketGateway implements OnModuleInit {
     onModuleInit() {
         this.server.on('connect', async (socket: Socket) => {
             const WebSocket = require('ws');
-            const serverUrl = 'ws://21.240.175.42:5580/ws';
+            const serverUrl = 'ws://192.168.1.41:5580/ws';
             const socketIo = new WebSocket(serverUrl);
             const param = getCommand(String(4));
 

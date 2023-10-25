@@ -41,7 +41,7 @@ export class DeviceSocket implements OnModuleInit {
   }
   async socketModule(socket: Socket,message: number, node_id: number) {
     const WebSocket = require('ws');
-    const serverUrl = 'ws://21.240.175.42:5580/ws';
+    const serverUrl = 'ws://192.168.1.41:5580/ws';
     const socketIo = new WebSocket(serverUrl);
     
     const param = getCommand(String(message), { 
