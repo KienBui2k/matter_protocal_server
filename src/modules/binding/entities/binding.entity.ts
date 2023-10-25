@@ -1,5 +1,5 @@
 import { Device } from "src/modules/devices/entities/device.entity";
-import { UserDevive } from "src/modules/user_devive/entities/user_devive.entity";
+import { UserDevice } from "src/modules/user_devive/entities/user_devive.entity";
 import { User } from "src/modules/users/entities/user.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -11,8 +11,8 @@ export class Binding {
     @Column({ unique: true, length: 50 })
     name: string;
 
-    @ManyToOne(() => UserDevive, (userDevive => userDevive.id))
-    userDevive : UserDevive;
+    @ManyToOne(() => UserDevice, (UserDevice => UserDevice.id))
+    UserDevice : UserDevice;
 
     @Column()
     deviceId: string;
