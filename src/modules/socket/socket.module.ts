@@ -4,13 +4,17 @@ import { JwtService } from '../jwt/jwt.service';
 import { UserSocketGateway } from './users/users.socket';
 import { Device } from '../devices/entities/device.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserDevive } from '../user_devive/entities/user_devive.entity';
-import { DeviceModule } from '../devices/device.module';
+import { ChartSocketGateway } from './chart/chart.socket';
+import { UserDevice } from '../user_devive/entities/user_devive.entity';
 import { User } from '../users/entities/user.entity';
+import { Chart } from '../chart/entities/chart.entity';
+import { AddDeviceSocketGateway } from './addDevices/addDevices';
+import { DeviceModule } from '../devices/device.module';
 @Module({
-      imports: [
-        TypeOrmModule.forFeature([Device,UserDevive,User])
-    ],
-  providers: [DeviceSocket, JwtService, UserSocketGateway,DeviceModule],
+  imports: [
+    TypeOrmModule.forFeature([Device, UserDevice, User, Chart])
+  ],
+  providers: [DeviceSocket, JwtService, UserSocketGateway, ChartSocketGateway, AddDeviceSocketGateway,DeviceModule],
+
 })
 export class SocketModule { }

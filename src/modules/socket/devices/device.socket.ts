@@ -76,6 +76,7 @@ export class DeviceSocket implements OnModuleInit {
             this.devices.push({
               decodedData,
             });
+
           } else if(jsonData?.message_id == 7 && jsonData?.result == null && jsonData.error_code != 5){
             // this.unpair(socket,"ầnuiawbnf",false)
             socket.emit('unpairScuces',"Đã ngắt kết nối với thiết bị!")

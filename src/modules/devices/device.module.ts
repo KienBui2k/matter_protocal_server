@@ -14,3 +14,4 @@ import { Device } from './entities/device.entity';
   providers: [DeviceService],
 })
 export class DeviceModule {}
+

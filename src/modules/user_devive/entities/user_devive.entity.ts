@@ -1,3 +1,4 @@
+
 import { Device } from "src/modules/devices/entities/device.entity";
 import { User } from "src/modules/users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -13,4 +14,5 @@ export class UserDevive {
 
     @OneToMany(() => Device, (device => device.id))
     devices:Device[]
+
 }
