@@ -2,8 +2,8 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as  bcrypt from 'bcrypt'
 import { UserRole, UserStatus } from "../user.enum";
+import { Binding } from "src/modules/binding/entities/binding.entity";
 import { UserDevice } from "src/modules/user_devive/entities/user_devive.entity";
-
 
 @Entity("users")
 export class User {
@@ -46,14 +46,11 @@ export class User {
     })
     updateAt: String;
 
-
     @BeforeUpdate()
     async setUpdateTime() {
         this.updateAt = String(Date.now());
     }
 
-
     @OneToMany(() => UserDevice, (userDevice) => userDevice.user)
     userDevice: UserDevice[]
-
 }

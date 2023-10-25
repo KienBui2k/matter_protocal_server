@@ -1,31 +1,20 @@
 
-
-import { UserDevive } from "src/modules/user_devive/entities/user_devive.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-
+import { UserDevice } from "src/modules/user_devive/entities/user_devive.entity";
+import { BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Binding } from "src/modules/binding/entities/binding.entity";
+import { Chart } from "src/modules/chart/entities/chart.entity";
 @Entity("devices")
 export class Device {
    @PrimaryGeneratedColumn('uuid') 
    id:string
 
-
    @Column()
    name: string;
-
-    // @Column()
-    // user_device_id: string
-
 
    @Column()
    node_id: number; // number
 
-
-
     @Column()
-    status: boolean
-
-    @Column()
-
     power: number
 
     @Column({ default: false })
@@ -39,13 +28,14 @@ export class Device {
         this.startTime = new Date(); // Cập nhật thời gian mỗi khi entity được cập nhật
     }
     @OneToMany(() => Chart, (device) => device.device) // Sử dụng tên relation "timestamp" từ entity Device
-    active:boolean
+    time:Chart
 
-    @Column()
-    power: number
-
-    @ManyToOne(() => UserDevive, (userDevice => userDevice.id))
+    @ManyToOne(() => UserDevice, (userDevice => userDevice.id))
     @JoinColumn({ name: 'userDeviceId' })
-    userDevice:UserDevive
+    userDevice:UserDevice
+
+    @Column( {default: true})
+    active: boolean
 
 }
+
