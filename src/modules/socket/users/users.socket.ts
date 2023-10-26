@@ -10,16 +10,22 @@ import { UserDevice } from 'src/modules/user_devive/entities/user_devive.entity'
 import { Device } from 'src/modules/devices/entities/device.entity';
 import { Binding } from 'src/modules/binding/entities/binding.entity';
 import { getCommand } from "src/enum";
+import { Chart } from 'src/modules/chart/entities/chart.entity';
 
 
 interface BindingDeviceType {
     binding: Binding;
     bindingDevice: Device;
 }
+interface deviceType {
+    user: User;
+    socket: Socket
+  }
 @WebSocketGateway(3001, { cors: true })
 export class UserSocketGateway implements OnModuleInit {
     @WebSocketServer()
     server: Server;
+    clients: deviceType[] = [];
     bindingDevices: BindingDeviceType[] = [];
 
     constructor(
@@ -27,6 +33,7 @@ export class UserSocketGateway implements OnModuleInit {
         @InjectRepository(User) private readonly User: Repository<User>,
         @InjectRepository(Device) private readonly Device: Repository<Device>,
         @InjectRepository(Binding) private readonly Binding: Repository<Binding>,
+        @InjectRepository(Chart) private readonly chartRespositoty: Repository<Chart>,
         @InjectRepository(UserDevice)
         private readonly UserDevive: Repository<UserDevice>,
     ) { }
@@ -56,6 +63,10 @@ export class UserSocketGateway implements OnModuleInit {
                     message: 'Đăng nhập thành công',
                     status: true,
                 });
+                this.clients.push({
+                    socket,
+                    user
+                  });
                 socket.emit('receiveUserData', user);
                 let userDeviceId = await this.getUerDevice(user.id);
                 if (userDeviceId) {
@@ -82,32 +93,32 @@ export class UserSocketGateway implements OnModuleInit {
                 }
                 let device
                 socket.on("addDevices", async (newItem: { code: string, name: string, power: number }) => {
-                const WebSocket = require('ws');
-                const serverUrl = 'ws://192.168.1.41:5580/ws';
-                const socketIo = new WebSocket(serverUrl);
-                const param = getCommand(String(2), {
-                    code: newItem.code
-                });
-                await socketIo.on('open', async () => {
-                    console.log('Đã kết nối tới cổng WebSocket', param);
-                    socketIo.send(JSON.stringify(param));
-                });
-                socketIo.addEventListener('message', async (event) => {
-                  
-                    const jsonData = JSON.parse(event.data.toString());
-                    console.log("event",jsonData);
+                    const WebSocket = require('ws');
+                    const serverUrl = 'ws://192.168.1.41:5580/ws';
+                    const socketIo = new WebSocket(serverUrl);
+                    const param = getCommand(String(2), {
+                        code: newItem.code
+                    });
+                    await socketIo.on('open', async () => {
+                        console.log('Đã kết nối tới cổng WebSocket', param);
+                        socketIo.send(JSON.stringify(param));
+                    });
+                    socketIo.addEventListener('message', async (event) => {
 
-                    if (jsonData.result && jsonData.result.node_id) {
-                        newItem.code = jsonData.result.node_id
+                        const jsonData = JSON.parse(event.data.toString());
+                        console.log("event", jsonData);
+
+                        if (jsonData.result && jsonData.result.node_id) {
+                            newItem.code = jsonData.result.node_id
                             device = await this.addDevices(userDeviceId, newItem)
-                        console.log("devicdw1123e", device);
-                        // this.server.emit('receiveCart', device);
-                        if (device) {       
-                              socket.emit('receiveDevice', device);
+                            console.log("devicdw1123e", device);
+                            // this.server.emit('receiveCart', device);
+                            if (device) {
+                                socket.emit('receiveDevice', device);
+                            }
                         }
-                    }
-                });
-            })
+                    });
+                })
             }
         });
     }
@@ -148,7 +159,7 @@ export class UserSocketGateway implements OnModuleInit {
             device.node_id = Number(newItem.code)
             device.name = newItem.name
             device.power = newItem.power
-                device.userDevice = userDeviceId
+            device.userDevice = userDeviceId
             await this.Device.save(device);
 
             let data = await this.getDeviceByUserId(userDeviceId);
@@ -201,6 +212,21 @@ export class UserSocketGateway implements OnModuleInit {
         } catch (err) {
             return false;
         }
+    }
+
+    async chartById(id: any) {
+        try {
+            let listBinding = await this.chartRespositoty.find({
+                where: {
+                    device: id,
+                },
+            });
+            if (!listBinding) return false;
+            return listBinding;
+        } catch (err) {
+            return false;
+        }
+
     }
 }
 
