@@ -52,7 +52,6 @@ export class ChartSocketGateway implements OnModuleInit {
                         console.log("charwdwk1j19t", chart);
 
                         socket.emit('receiveChart', chart)
-
                     }
                     if (status !== undefined) {
                         console.log('Giá trị boolean từ jsonData.data:', status);
