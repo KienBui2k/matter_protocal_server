@@ -62,7 +62,6 @@ export class ChartSocketGateway implements OnModuleInit {
                     console.log('jsonData.data không phải là một mảng.');
                 }
             });
-
         });
     }
     async createUsageRecord(socket: Socket, deviceId: number, status: boolean): Promise<Chart | null> {
