@@ -30,8 +30,9 @@ export class User {
         this.password = await bcrypt.hash(this.password, 10);
     }
 
-    @Column({ type: 'enum', enum: UserRole, default: UserRole.OWNER })
-    role: UserRole;
+    @Column({ default: false })
+    isAdmin: boolean;
+
 
     @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
