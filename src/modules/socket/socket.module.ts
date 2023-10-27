@@ -11,11 +11,12 @@ import { Binding } from '../binding/entities/binding.entity';
 import { Chart } from '../chart/entities/chart.entity';
 import { AddDeviceSocketGateway } from './addDevices/addDevices';
 import { DeviceModule } from '../devices/device.module';
+import { Permisstion } from '../permisstion/entities/permisstion.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Device, UserDevice, User, Chart,Binding])
+    TypeOrmModule.forFeature([Device, UserDevice, User, Chart, Binding, Permisstion])
   ],
-  providers: [DeviceSocket, JwtService, UserSocketGateway, ChartSocketGateway, AddDeviceSocketGateway,DeviceModule],
+  providers: [DeviceSocket, JwtService, UserSocketGateway, ChartSocketGateway, AddDeviceSocketGateway, DeviceModule],
 
 
 })

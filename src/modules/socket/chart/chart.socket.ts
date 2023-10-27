@@ -50,7 +50,6 @@ export class ChartSocketGateway implements OnModuleInit {
                     const chart = this.createUsageRecordEntry
                     if (chart) {
                         console.log("charwdwk1j19t", chart);
-
                         socket.emit('receiveChart', chart)
                     }
                     if (status !== undefined) {
@@ -101,26 +100,32 @@ export class ChartSocketGateway implements OnModuleInit {
         const record = new Chart();
         record.timestamp = elapsedTime;
         record.Date = new Date();
-        const device = await this.Devices.findOneOrFail({ where: { node_id: deviceId } });
-        record.device = device;
-        await this.chartRespositoty.save(record);
 
-        const data = await this.chartById(deviceId);
-        console.log("datadatadatadata",data);
-        
-        if (data) {
-            console.log("datdw11a", data);
-            socket.emit('showChartList', data);
+        try {
+            const device = await this.Devices.findOne({ where: { node_id: deviceId } });
 
-        }
-        if (data && data.length > 0) {
-            // Kiểm tra nếu có dữ liệu và data[0] chứa thông tin Chart
-            return data[0];
-        } else {
-            // Nếu không có dữ liệu hoặc data không chứa thông tin Chart, bạn có thể xử lý lỗi hoặc trả về giá trị mặc định tùy ý ở đây.
-            throw new Error("Không thể tìm thấy dữ liệu hoặc dữ liệu không hợp lệ");
+            if (device) {
+                record.device = device;
+                await this.chartRespositoty.save(record);
+
+                const data = await this.chartById(deviceId);
+                if (data && data.length > 0) {
+                    console.log("Dữ liệu", data);
+                    socket.emit('showChartList', data);
+                    return data[0];
+                } else {
+                    throw new Error("Không thể tìm thấy dữ liệu hoặc dữ liệu không hợp lệ");
+                }
+            } else {
+                console.error("Thiết bị không tồn tại");
+
+            }
+        } catch (error) {
+            console.error("Lỗi khi tạo bản ghi sử dụng:", error);
+            throw error; 
         }
     }
+
 
     async chartById(id: any) {
         try {
