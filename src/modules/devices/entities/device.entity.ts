@@ -5,8 +5,9 @@ import { Binding } from "src/modules/binding/entities/binding.entity";
 import { Chart } from "src/modules/chart/entities/chart.entity";
 @Entity("devices")
 export class Device {
-   @PrimaryGeneratedColumn('uuid') 
-   id:string
+    @PrimaryGeneratedColumn('uuid')
+    id: string
+
 
    @Column()
    name: string;
@@ -38,4 +39,5 @@ export class Device {
     active: boolean
 
 }
+
 
