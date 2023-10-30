@@ -65,7 +65,10 @@ export class UserSocketGateway implements OnModuleInit {
                     message: 'Đăng nhập thành công',
                     status: true,
                 });
-                socket.emit('receiveUserData', user);
+                let userss = await this.getuserDevice(user.id)
+                if (userss) {
+                    socket.emit('receiveUserData', userss);
+                }
                 let userDeviceId = await this.getUerDevice(user.id);
                 if (userDeviceId) {
                     let userdevice = await this.getDeviceByUserId(userDeviceId);
@@ -152,12 +155,23 @@ export class UserSocketGateway implements OnModuleInit {
                     console.log("listuser", listuser);
                     socket.emit('listUser', listuser)
                 }
+                let list11user = await this.listAllUser()
+                if (list11user) {
+                    console.log("wi1", list11user);
+                    socket.emit('listU', list11user)
+
+                }
                 socket.on('addRole', async (newRole: { userId: string, role: UserRole }) => {
-                    console.log('add Binding', newRole);
                     let bindingData = await this.updateRole(newRole);
                     socket.emit('listUser', bindingData)
 
                 });
+                // socket.on('addUser', async (newRole: { userId: string, role: UserRole }) => {
+                //     console.log('add Binding', newRole);
+                //     let bindingData = await this.updateRole(newRole);
+                //     socket.emit('listUser', bindingData)
+
+                // });
             }
 
         })
@@ -183,6 +197,22 @@ export class UserSocketGateway implements OnModuleInit {
                 return newUserDevice;
             }
             return oldUserDevice.userDevice[0];
+        } catch (err) {
+            console.log('err', err);
+            return false;
+        }
+    }
+    async getuserDevice(id: string) {
+        try {
+            let oldUserDevice = await this.User.findOne({
+                where: {
+                    id,
+                },
+                relations: {
+                    userDevice: true,
+                },
+            });
+            return oldUserDevice;
         } catch (err) {
             console.log('err', err);
             return false;
@@ -305,7 +335,9 @@ export class UserSocketGateway implements OnModuleInit {
 
     async updateRole(newRole: { userId: string, role: UserRole }) {
         try {
+            console.log("ererwdwvao2");
             let user = await this.UserDevive.findOne({ where: { id: newRole.userId } });
+            console.log("user", user);
             if (!user) {
                 return {
                     message: "User not known"
@@ -323,8 +355,16 @@ export class UserSocketGateway implements OnModuleInit {
 
     async listUser() {
         try {
-
             const users = await this.UserDevive.find({ where: { role: UserRole.MEMBER } });
+            return users;
+        } catch (err) {
+            console.error('Lỗi khi lấy danh sách người dùng', err);
+            throw err;
+        }
+    }
+    async listAllUser() {
+        try {
+            const users = await this.UserDevive.find({ where: { role: UserRole.OWNER } });
             return users;
         } catch (err) {
             console.error('Lỗi khi lấy danh sách người dùng', err);
