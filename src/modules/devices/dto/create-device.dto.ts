@@ -8,6 +8,8 @@ export class CreateDeviceDto {
     @Allow()
     node_id: number;
     @IsNotEmpty()
+    active:boolean;
+    @IsNotEmpty()
     status: boolean;
     @IsNotEmpty()
     power: number;

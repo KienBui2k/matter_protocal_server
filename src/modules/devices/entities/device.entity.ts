@@ -4,31 +4,28 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, Primary
 
 @Entity("devices")
 export class Device {
-   @PrimaryGeneratedColumn('uuid') 
-   id:string
+    @PrimaryGeneratedColumn('uuid')
+    id: string
 
+    @Column()
+    name: string;
 
-   @Column()
-   name: string;
+    @Column()
+    user_device_id: string
 
-    // @Column()
-    // user_device_id: string
-
-
-   @Column()
-   node_id: number; // number
-
+    @Column()
+    node_id: number; // number
 
     @Column()
     status: boolean
 
     @Column()
-    active:boolean
+    active: boolean
 
     @Column()
     power: number
 
-    @ManyToOne(() => UserDevive, (userDevice => userDevice.id))
-    @JoinColumn({ name: 'userDeviceId' })
-    userDevice:UserDevive
+    // @ManyToOne(() => UserDevive, (userDevice => userDevice.id))
+    // @JoinColumn({ name: 'userDeviceId' })
+    // userDevice:UserDevive
 }
