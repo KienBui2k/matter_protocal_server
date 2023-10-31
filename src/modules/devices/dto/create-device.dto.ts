@@ -4,13 +4,13 @@ export class CreateDeviceDto {
     @IsNotEmpty()
     name: string;
     @IsNotEmpty()
-    user_device_id: string;
+    userDeviceId: string;
     @Allow()
     node_id: number;
     @IsNotEmpty()
     active:boolean;
     @IsNotEmpty()
-    status: boolean;
+    isDeviceOn: boolean;
     @IsNotEmpty()
     power: number;
     // @IsNotEmpty()

@@ -34,6 +34,8 @@ export class Device {
     @ManyToOne(() => UserDevice, (userDevice => userDevice.id))
     @JoinColumn({ name: 'userDeviceId' })
     userDevice:UserDevice
+    @Column({ default: false })
+    userDeviceId: string;
 
     @Column( {default: true})
     active: boolean
