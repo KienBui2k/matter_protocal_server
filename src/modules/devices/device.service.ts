@@ -62,7 +62,7 @@ export class DeviceService {
       //   }
       // }
       let update = { ...devicesSource }
-      update.status = status.status
+      update.isDeviceOn = status.status
       let userSourceUpdate = this.devices.merge(devicesSource, update);
       let result = await this.devices.save(userSourceUpdate);
       return {
@@ -95,7 +95,7 @@ let parsenode = parseInt(node_id)
       //   }
       // }
       let update = { ...devicesSource }
-      update.status = status.status
+      update.isDeviceOn = status.status
       let userSourceUpdate = this.devices.merge(devicesSource, update);
       let result = await this.devices.save(userSourceUpdate);
       return {

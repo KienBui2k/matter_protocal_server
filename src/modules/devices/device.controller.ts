@@ -14,6 +14,16 @@ interface Data2 {
 interface Result {
   node_id?: number;
 }
+interface Device{
+  userDeviceId:string;
+  name:string;
+  node_id:number;
+  isDeviceOn:boolean;
+  id:string;
+  startTime:string;
+  active:boolean;
+
+}
 @Controller('device')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) { }
@@ -68,7 +78,7 @@ export class DeviceController {
           const minutes = currentDate.getMinutes();
           const seconds = currentDate.getSeconds();
 
-          const time = `${dayOfMonth}/${month}/${year}/${hours}:${minutes}:${seconds}`
+          const time = `${dayOfMonth}/${month}/${year}/${hours}:${minutes}:${seconds}` 
           // let data1 =
           //   {
           //     message_id: '43',
@@ -129,23 +139,35 @@ export class DeviceController {
   // }
   @Get()
   //get all device
-  async findAll(@Res() res: Response, @Query('q') q: string) {
+  async findAll(@Res() res: Response, @Query('q') q: string,@Query('s') s: string) {
     try {
       if (q != '') {
         let data = await this.deviceService.search(q)
+        console.log('dât',data);
+        
+       let adata= data.data.filter((data)=>{ 
+          return data.userDeviceId===s
+        })
         return res.status(data.status ? 200 : 213).json({
           message: data.message,
-          data: data.data
+          data: adata
         })
       } else {
-        let [status, message, data] = await this.deviceService.findAll();
+        let [status, message, data] = (await this.deviceService.findAll()) 
+        console.log('await this.deviceService.findAll()', data);
+
+        let filteredData = (data as unknown as Device[]).filter((device: Device) => {
+          return device.userDeviceId === s;
+        });
+        console.log("🚀 ~ file: device.controller.ts:160 ~ DeviceController ~ filteredData ~ filteredData:", filteredData,'hhhhhhhhhhhhh')
         return res.status(status ? 200 : 213).json({
           message,
-          data
-        })
+          data: filteredData, 
+        });
       }
 
     } catch (err) {
+      console.log("🚀 ~ file: device.controller.ts:158 ~ DeviceController ~ findAll ~ err:", err)
       return res.status(500).json({
         message: "Controller error!"
       })
