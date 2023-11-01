@@ -16,14 +16,12 @@ export class DeviceService {
 
   async create(createDeviceDto: CreateDeviceDto) {
     try {
-      console.log("vao r", createDeviceDto);
       let newDevice = await this.devices.save(createDeviceDto);
       if (!newDevice) {
         return [false, "create failure"]
       }
       return [true, "create success", newDevice]
     } catch (err) {
-      // console.log('error device', err);
       return [false, "error device1", null]
     }
   }
@@ -35,7 +33,6 @@ export class DeviceService {
       }
       return [true, "get success", newDevice]
     } catch (err) {
-      console.log('error device', err);
       return [false, "error device", null]
     }
   }
@@ -47,8 +44,6 @@ export class DeviceService {
 
   async realtime(node_id: any, status: any) {
     try {
-      console.log('status', status);
-
       let devicesSource = await this.devices.findOne({
         where: {
           node_id: node_id
